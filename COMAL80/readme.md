@@ -13,10 +13,10 @@ Può essere caricato in un emulatore Commodore 64 oppure trasferito su un floppy
 | 4  | `computer.prg`   | PRG | Soluzione BASIC originale al problema 46 da "The Commodore Puzzle Book" |
 | 7  | `computer3`      | PRG | Soluzione COMAL al problema 46 "COMPUTER" |
 | 3  | `hymns.prg`      | PRG | Soluzione BASIC originale al problema 1 da "The Commodore Puzzle Book" |
-| 5  | `hymns2`         | PRG | Soluzione COMAL al problema "I numeri degli inni" |
+| 5  | `hymns2`         | PRG | Soluzione COMAL al problema 1 "I numeri degli inni" |
 | 3  | `hymns1.prg`     | PRG | Soluzione BASIC ottimizzata al problema 1 da "The Commodore Puzzle Book" |
 | 5  | `sarah1.prg`     | PRG | Soluzione BASIC originale al problema 11 da "The Commodore Puzzle Book" |
-| 6  | `sarah2`         | PRG | Soluzione COMAL al problema "Il numero di Sarah" |
+| 6  | `sarah2`         | PRG | Soluzione COMAL al problema 11 "Il numero di Sarah" |
 | 12 | `scooter`        | PRG | "A scuola in scooter" da "La settimana enigmistica" |
 | 9  | `descparts`      | PRG | Algoritmi per partizioni di interi |
 | 8  | `stable`         | PRG | Algoritmo originale per Stable Marriage |
