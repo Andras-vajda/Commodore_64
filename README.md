@@ -1,6 +1,7 @@
 # Commodore 64 - Retrocomputing & Programmazione
 
-Benvenuti nel repository dedicato al **Commodore 64**, il leggendario home computer che ha segnato la storia dell'informatica! Qui troverete materiale tecnico, codice sorgente e articoli su **Assembly 6502/6510, COMAL e BASIC**.
+Benvenuti nel mio repository dedicato al **Commodore 64**, il leggendario home computer che ha segnato la storia dell'informatica! 
+Qui troverete materiale tecnico, codice sorgente e articoli su **Assembly 6502/6510, COMAL e BASIC** prodotto nell'arco di oltre trenta anni.
 
 ---
 
