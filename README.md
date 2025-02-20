@@ -9,11 +9,11 @@ Qui troverete materiale tecnico, codice sorgente e articoli su **Assembly 6502/6
 
 | 📄 Nome File | 📜 Descrizione |
 |-------------|--------------|
-| **Retrocomputing_C64.pdf** | Raccolta di articoli prodotti tra il **1995 e oggi**, alcuni pubblicati su *RetroMagazine*. Contiene approfondimenti su Assembly, ottimizzazioni, linguaggi e tecniche di programmazione per il C64. |
+| **Retrocomputing_C64.pdf** | Raccolta di articoli prodotti tra il **1995 e oggi**, alcuni pubblicati su *RetroMagazine*. Contiene approfondimenti su Assembly, ottimizzazioni, linguaggi e tecniche di programmazione per il C64. **Articoli inclusi:** <br> - *Bibliografia essenziale per Commodore 64* <br> - *Mastercode BASIC Extender* <br> - *Il giro del cavallo* <br> - *COMAL: la strana storia di un linguaggio dimenticato* <br> - *I numeri dei salmi* <br> - *Il numero di Sarah* <br> - *COMPUTER* <br> - *Cielo... mio marito!* <br> - *A scuola in scooter... con COMAL* |
 | **Book_6510.zip** | Tutti i sorgenti in Assembly per CBM Prg Studio associati al mio Manuale Introduttivo Assembly 6502/6510. |
-| **Hanoi.pdf** | Studio sulle *Torri di Hanoi*, risolte in modo ottimizzato senza ricorsione! Un approccio alternativo per mostrare la soluzione ottimale in termini iterativi, come sequenza combinatoria, senza il solito fardello della ricorsione. Approccio eccellente anche per sistemi a 4 e 8 bit, microcontroller con risorse limtatissime, eccetera. |
+| **Hanoi.pdf** | Studio sulle *Torri di Hanoi*, risolte in modo ottimizzato senza ricorsione! Un approccio alternativo per mostrare la soluzione ottimale in termini iterativi, come sequenza combinatoria, senza il solito fardello della ricorsione. Approccio eccellente anche per sistemi a 4 e 8 bit, microcontroller con risorse limitatissime, eccetera. |
 
-🔗 **Manuale Assembly 6502/6510**: Il mio manuale introduttivo rimane disponibile all'URL ufficiale: **[tinyurl.com/mry7zfba](https://tinyurl.com/mry7zfba)**.
+🔗 **Manuale Assembly 6502/6510**: Il mio Manuale Introduttivo rimane disponibile all'URL ufficiale: **[tinyurl.com/mry7zfba](https://tinyurl.com/mry7zfba)**.
 
 ---
 
@@ -32,4 +32,3 @@ Qui troverete materiale tecnico, codice sorgente e articoli su **Assembly 6502/6
 📢 **Hai suggerimenti o vuoi collaborare?** Apri un'**issue** o una **pull request** per migliorare il contenuto e aggiungere altro materiale storico!
 
 ⭐ Se trovi utile questo repository, lascia una *star* su GitHub!
-
