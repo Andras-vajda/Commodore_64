@@ -11,7 +11,7 @@ Qui troverete materiale tecnico, codice sorgente e articoli su **Assembly 6502/6
 |-------------|--------------|
 | **Retrocomputing_C64.pdf** | Raccolta di articoli prodotti tra il **1995 e oggi**, alcuni pubblicati su *RetroMagazine*. Contiene approfondimenti su Assembly, ottimizzazioni, linguaggi e tecniche di programmazione per il C64. |
 | **Book_6510.zip** | Tutti i sorgenti in Assembly per CBM Prg Studio associati al mio Manuale Introduttivo Assembly 6502/6510. |
-| **Hanoi.pdf** | Studio sulle *Torri di Hanoi*, risolte in modo ottimizzato senza ricorsione! Un approccio alternativo per migliorare le performance sui sistemi a 8-bit. |
+| **Hanoi.pdf** | Studio sulle *Torri di Hanoi*, risolte in modo ottimizzato senza ricorsione! Un approccio alternativo per mostrare la soluzione ottimale in termini iterativi, come sequenza combinatoria, senza il solito fardello della ricorsione. Approccio eccellente anche per sistemi a 4 e 8 bit, microcontroller con risorse limtatissime, eccetera. |
 
 🔗 **Manuale Assembly 6502/6510**: Il mio manuale introduttivo rimane disponibile all'URL ufficiale: **[tinyurl.com/mry7zfba](https://tinyurl.com/mry7zfba)**.
 
