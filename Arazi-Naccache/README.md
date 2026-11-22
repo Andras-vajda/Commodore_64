@@ -13,7 +13,9 @@ Arazi-Naccache/
 ├── asm/
 │   ├── AN_BCD.asm                 # Sorgente principale (CBM prg Studio)
 │   ├── AN_data.asm                # Dati demo PETSCII espliciti (incluso via IncAsm)
-│   └── AN_BCD.lst                 # Listato assemblato con indirizzi e cicli
+│   ├── AN_BCD.lst                 # Listato assemblato con indirizzi e cicli
+│   ├── README.md
+│   └── AN_ST6225.asm              # Sorgente storico per ST6225
 ├── img/
 │   ├── VICE_interi_32bit.png      # Schermata VICE PAL (pagina 1: 0..32 bit)
 │   └── VICE_interi_256bit.png     # Schermata VICE PAL (pagina 2: 64..256 bit)
@@ -24,8 +26,6 @@ Arazi-Naccache/
 ├── build/
 │   └── comparison-bcd.json        # Resoconto riproducibile del confronto
 └── st62/                          # Reperto storico extra-articolo (ST6220/ST6225)
-    ├── README.md
-    └── AN_ST6225.asm
 ```
 
 ## Specifiche tecniche (C64 / MOS 6502-6510)
