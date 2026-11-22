@@ -82,7 +82,7 @@ Sul 6502, dotato di modo decimale hardware (`SED`), Horner BCD prevale nei cicli
 
 ## Riferimenti essenziali
 
-* B. Arazi, D. Naccache, *"Binary-to-decimal conversion based on the divisibility of $2^8 - 1$ by 5"*, Electronics Letters, 28(23):2151–2152, 1992. DOI: `10.1049/el:19921381`.
+* B. Arazi, D. Naccache, *"Binary-to-decimal conversion based on the divisibility of $$2^8 - 1$$ by 5"*, Electronics Letters, 28(23):2151–2152, 1992. DOI: `10.1049/el:19921381`.
 * J. J. F. Cavanagh, *Digital Computer Arithmetic: Design and Implementation*, McGraw-Hill, 1984.
 
 ## Licenza
