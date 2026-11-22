@@ -1,0 +1,48 @@
+{
+  "esito": "PASS",
+  "cpu": "py65 NMOS 6502",
+  "seed": "0x65026510",
+  "test": {
+    "divisioni_esatte_16_bit_due_versioni": 516,
+    "resti_modulo_10_16_bit": 65536,
+    "conversioni_complete_16_bit": 65536,
+    "conversioni_multiprecisione": 573,
+    "stampe_con_registri_kernal_alterati": 4,
+    "lunghezze_non_valide": 4
+  },
+  "massimi": [
+    {
+      "byte": 1,
+      "cifre": 3,
+      "cicli_6502_conversione": 2503
+    },
+    {
+      "byte": 2,
+      "cifre": 5,
+      "cicli_6502_conversione": 5161
+    },
+    {
+      "byte": 4,
+      "cifre": 10,
+      "cicli_6502_conversione": 14478
+    },
+    {
+      "byte": 8,
+      "cifre": 20,
+      "cicli_6502_conversione": 45885
+    },
+    {
+      "byte": 16,
+      "cifre": 39,
+      "cicli_6502_conversione": 155825
+    },
+    {
+      "byte": 32,
+      "cifre": 78,
+      "cicli_6502_conversione": 577480
+    }
+  ],
+  "prg_sha256": "1995feb24cb513d5211cf6dfc72c27de2db77ff9f5780380c861df7feffbb159",
+  "secondi_host": 79.488,
+  "nota_cicli": "Esclusi KERNAL, IRQ, VIC-II e attese."
+}

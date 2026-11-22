@@ -1,0 +1,12 @@
+{
+  "esito": "PASS",
+  "emulatore": "VICE x64sc 3.9, C64 PAL",
+  "disco": "D64, dispositivo 8, emulazione IEC virtuale",
+  "avvio": "LOAD \"ARAZI\",8,1 / SYS 49152",
+  "controlli": [
+    "RAM caricata uguale al PRG",
+    "due pagine",
+    "ritorno al prompt READY."
+  ],
+  "prg_sha256": "1995feb24cb513d5211cf6dfc72c27de2db77ff9f5780380c861df7feffbb159"
+}

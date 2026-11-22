@@ -1,0 +1,59 @@
+{
+  "esito": "PASS",
+  "cpu": "py65 NMOS 6502",
+  "ingressi_bcd_16_bit": 65536,
+  "ingressi_bcd_multiprecisione": 573,
+  "contratto": "stessa stringa numerica senza zeri iniziali e con NUL",
+  "misura": "ingresso routine fino a RTS incluso, senza JSR chiamante",
+  "esclusioni": "KERNAL, IRQ/NMI, contesa VIC-II, attese",
+  "limite": "BCD usa SED e maschera IRQ; NMI non simulati",
+  "interpretazione": "confronto fra due implementazioni, non ottimalita",
+  "massimi": [
+    {
+      "byte": 1,
+      "cifre": 3,
+      "arazi_naccache_cicli": 2503,
+      "horner_bcd_cicli": 830,
+      "rapporto_an_bcd": 3.016
+    },
+    {
+      "byte": 2,
+      "cifre": 5,
+      "arazi_naccache_cicli": 5161,
+      "horner_bcd_cicli": 1745,
+      "rapporto_an_bcd": 2.958
+    },
+    {
+      "byte": 4,
+      "cifre": 10,
+      "arazi_naccache_cicli": 14478,
+      "horner_bcd_cicli": 4545,
+      "rapporto_an_bcd": 3.185
+    },
+    {
+      "byte": 8,
+      "cifre": 20,
+      "arazi_naccache_cicli": 45885,
+      "horner_bcd_cicli": 15346,
+      "rapporto_an_bcd": 2.99
+    },
+    {
+      "byte": 16,
+      "cifre": 39,
+      "arazi_naccache_cicli": 155825,
+      "horner_bcd_cicli": 56139,
+      "rapporto_an_bcd": 2.776
+    },
+    {
+      "byte": 32,
+      "cifre": 78,
+      "arazi_naccache_cicli": 577480,
+      "horner_bcd_cicli": 209340,
+      "rapporto_an_bcd": 2.759
+    }
+  ],
+  "hash": {
+    "AraziNaccache.prg": "1995feb24cb513d5211cf6dfc72c27de2db77ff9f5780380c861df7feffbb159",
+    "CompareBCD.prg": "1913a27a8717b2bba935ac2f9808e4a3fdbb7f2e035b5461688e27fd793a9eba"
+  }
+}

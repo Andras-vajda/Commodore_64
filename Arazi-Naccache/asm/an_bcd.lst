@@ -1,0 +1,529 @@
+Line   Addr ## Code       Source
+----------------------------------------
+00001  0000               ; ==================================================
+00002  0001               ; ARAZI-NACCACHE: BINARIO -> DECIMALE, MOS 6502/6510
+00003  0001               ; COMMODORE 64, CBM PRG STUDIO. SOLO NMOS DOCUMENT.
+00004  0001               ; COPYRIGHT (C) 2026 M.A.W. 1968. LICENZA MIT.
+00005  0001               ; CARICAMENTO: LOAD "ANBCD",8,1   AVVIO: SYS 49152
+00006  0001               ; ==================================================
+00007  0001                          * = $C000
+00008  C000               
+00009  C000               PRINTCHR   = $FFD2      ; KERNAL CHROUT: CHAR IN A.
+00010  C000               CLRCHN     = $FFCC      ; RIPRISTINA CANALI STD.
+00011  C000               GETIN      = $FFE4      ; TASTIERA NON BLOCCANTE.
+00012  C000               SOURCE     = $FB        ; PTR TEMP; RIPRISTINATO.
+00013  C000               MAXBYTES   = 32         ; 1..32 BYTE (FINO 256 BIT).
+00014  C000               MAXTEXT    = 3*MAXBYTES ; LIMITE CIFRE + NUL.
+00015  C000               
+00016  C000               
+00017  C000               ; --------------------------------------------------
+00018  C000               ; DIMOSTRATORE SU DUE PAGINE.
+00019  C000               ; SPAZIO PASSA ALLA SECONDA, POI TORNA AL BASIC.
+00020  C000               ; --------------------------------------------------
+00021  C000 2  D8         START      CLD
+00022  C001 6  20 CC FF              JSR CLRCHN
+00023  C004 2  A9 93                 LDA #147
+00024  C006 6  20 D2 FF              JSR PRINTCHR
+00025  C009 2  A9 00                 LDA #0
+00026  C00B 4  8D 7B C2              STA DEMOPAGE
+00027  C00E 4  8D 7A C2              STA DEMOCASE
+00028  C011 2  A2 7F                 LDX #<TITLE1
+00029  C013 2  A0 C3                 LDY #>TITLE1
+00030  C015 6  20 3D C2              JSR PRINTSTRING
+00031  C018               DEMOLOOP
+00032  C018 4  AE 7A C2              LDX DEMOCASE
+00033  C01B 2  E0 08                 CPX #8
+00034  C01D 2* D0 1E                 BNE DEMONEXT
+00035  C01F 4  AD 7B C2              LDA DEMOPAGE
+00036  C022 2* D0 19                 BNE DEMONEXT
+00037  C024 2  A2 05                 LDX #<PROMPT1
+00038  C026 2  A0 C4                 LDY #>PROMPT1
+00039  C028 6  20 3D C2              JSR PRINTSTRING
+00040  C02B               PAGE1READY 
+00041  C02B 6  20 8D C0              JSR WAITSPACE
+00042  C02E 6  EE 7B C2              INC DEMOPAGE
+00043  C031 2  A9 93                 LDA #147
+00044  C033 6  20 D2 FF              JSR PRINTCHR
+00045  C036 2  A2 C3                 LDX #<TITLE2
+00046  C038 2  A0 C3                 LDY #>TITLE2
+00047  C03A 6  20 3D C2              JSR PRINTSTRING
+00048  C03D               DEMONEXT
+00049  C03D 4  AE 7A C2              LDX DEMOCASE
+00050  C040 2  E0 0B                 CPX #11
+00051  C042 2* F0 39                 BEQ DEMODONE
+00052  C044 4* BD 12 C5              LDA NAMELO,X
+00053  C047 4* BC 1D C5              LDY NAMEHI,X
+00054  C04A 2  AA                    TAX
+00055  C04B 6  20 3D C2              JSR PRINTSTRING
+00056  C04E 4  AE 7A C2              LDX DEMOCASE
+00057  C051 4* BD 28 C5              LDA VALUELO,X
+00058  C054 4  8D 75 C2              STA ARGLO
+00059  C057 4* BD 33 C5              LDA VALUEHI,X
+00060  C05A 4  8D 76 C2              STA ARGHI
+00061  C05D 4* BD 3E C5              LDA VALUELEN,X
+00062  C060 4  AE 75 C2              LDX ARGLO
+00063  C063 4  AC 76 C2              LDY ARGHI
+00064  C066 6  20 95 C0              JSR PRINTNUMBER
+00065  C069 2* 90 07                 BCC DEMOGOOD
+00066  C06B 2  A2 43                 LDX #<ERRORTEXT
+00067  C06D 2  A0 C4                 LDY #>ERRORTEXT
+00068  C06F 6  20 3D C2              JSR PRINTSTRING
+00069  C072               DEMOGOOD
+00070  C072 2  A9 0D                 LDA #13
+00071  C074 6  20 D2 FF              JSR PRINTCHR
+00072  C077 6  EE 7A C2              INC DEMOCASE
+00073  C07A 3  4C 18 C0              JMP DEMOLOOP
+00074  C07D               DEMODONE
+00075  C07D 2  A2 29                 LDX #<PROMPT2
+00076  C07F 2  A0 C4                 LDY #>PROMPT2
+00077  C081 6  20 3D C2              JSR PRINTSTRING
+00078  C084               PAGE2READY 
+00079  C084 6  20 8D C0              JSR WAITSPACE
+00080  C087 2  A9 0D                 LDA #13
+00081  C089 6  20 D2 FF              JSR PRINTCHR
+00082  C08C 6  60                    RTS
+00083  C08D               
+00084  C08D               WAITSPACE
+00085  C08D 6  20 E4 FF              JSR GETIN
+00086  C090 2  C9 20                 CMP #32
+00087  C092 2* D0 F9                 BNE WAITSPACE
+00088  C094 6  60                    RTS
+00089  C095               
+00090  C095               ; --------------------------------------------------
+00091  C095               ; PRINTNUMBER: A=N, X/Y=LO/HI SORGENTE (FORMATO LE).
+00092  C095               ; STAMPA SENZA CR SUL CANALE KERNAL CORRENTE; START
+00093  C095               ; SELEZIONA LO SCHERMO. C=0: N VALIDO; C=1: N NON
+00094  C095               ; VALIDO, NESSUNA STAMPA (NON SEGNALA ERRORI I/O).
+00095  C095               ; --------------------------------------------------
+00096  C095               PRINTNUMBER 
+00097  C095 6  20 B2 C0              JSR CONVERTNUMBER
+00098  C098 2* B0 17                 BCS PRINTNUMBEREND
+00099  C09A 2  A9 00                 LDA #0
+00100  C09C 4  8D 79 C2              STA PRINTINDEX
+00101  C09F               PRINTNUMBERLOOP 
+00102  C09F 4  AE 79 C2              LDX PRINTINDEX
+00103  C0A2 4* BD 1E C3              LDA DECIMALTEXT,X
+00104  C0A5 2* F0 09                 BEQ PRINTNUMBEROK
+00105  C0A7 6  20 D2 FF              JSR PRINTCHR
+00106  C0AA 6  EE 79 C2              INC PRINTINDEX
+00107  C0AD 3  4C 9F C0              JMP PRINTNUMBERLOOP
+00108  C0B0               PRINTNUMBEROK 
+00109  C0B0 2  18                    CLC
+00110  C0B1               PRINTNUMBEREND 
+00111  C0B1 6  60                    RTS
+00112  C0B2               
+00113  C0B2               ; --------------------------------------------------
+00114  C0B2               ; CONVERTNUMBER: A=N (1..MAXBYTES), X/Y=LO/HI SRC.
+00115  C0B2               ; USCITA: DECIMALTEXT ASCII/PETSCII TERMINATO DA 0,
+00116  C0B2               ;   X=NUMERO DI CIFRE, C=0. SE N NON VALIDO: C=1,
+00117  C0B2               ;   X=0, STRINGA VUOTA. ALTERA A,X,Y,FLAG; D=0.
+00118  C0B2               ; PRESERVA SORGENTE E $FB/$FC. BUFFER STATICI (NON
+00119  C0B2               ; RIENTRANTE): SORGENTE DISGIUNTA DA RAM DI LAVORO,
+00120  C0B2               ; $FB/$FC, STACK ATTIVO E AREE ALTERATE DAL KERNAL;
+00121  C0B2               ; DEVE ESSERE LEGGIBILE NELLA CONFIGURAZIONE ATTIVA.
+00122  C0B2               ; --------------------------------------------------
+00123  C0B2               CONVERTNUMBER 
+00124  C0B2 2  D8                    CLD
+00125  C0B3 2  C9 01                 CMP #1
+00126  C0B5 2* 90 7A                 BCC CONVERTBAD
+00127  C0B7 2  C9 21                 CMP #MAXBYTES+1
+00128  C0B9 2* B0 76                 BCS CONVERTBAD
+00129  C0BB 4  8D 6F C2              STA INPUTLEN
+00130  C0BE 4  8E 75 C2              STX ARGLO
+00131  C0C1 4  8C 76 C2              STY ARGHI
+00132  C0C4 3  A5 FB                 LDA SOURCE
+00133  C0C6 4  8D 77 C2              STA SAVESOURCE
+00134  C0C9 3  A5 FC                 LDA SOURCE+1
+00135  C0CB 4  8D 78 C2              STA SAVESOURCE+1
+00136  C0CE 4  AD 75 C2              LDA ARGLO
+00137  C0D1 3  85 FB                 STA SOURCE
+00138  C0D3 4  AD 76 C2              LDA ARGHI
+00139  C0D6 3  85 FC                 STA SOURCE+1
+00140  C0D8 2  A9 00                 LDA #0
+00141  C0DA 4  8D 71 C2              STA DIGITCOUNT
+00142  C0DD 2  A0 00                 LDY #0
+00143  C0DF               CONVERTCOPY 
+00144  C0DF 5* B1 FB                 LDA (SOURCE),Y
+00145  C0E1 5  99 7C C2              STA WORK,Y
+00146  C0E4 2  C8                    INY
+00147  C0E5 4  CC 6F C2              CPY INPUTLEN
+00148  C0E8 2* D0 F5                 BNE CONVERTCOPY
+00149  C0EA 2  A9 00                 LDA #0
+00150  C0EC 5  99 7C C2              STA WORK,Y    ; BYTE DI GUARDIA (X51).
+00151  C0EF 2  C8                    INY
+00152  C0F0 4  8C 70 C2              STY WORKLEN
+00153  C0F3 4  AD 77 C2              LDA SAVESOURCE
+00154  C0F6 3  85 FB                 STA SOURCE
+00155  C0F8 4  AD 78 C2              LDA SAVESOURCE+1
+00156  C0FB 3  85 FC                 STA SOURCE+1
+00157  C0FD               CONVERTDIGIT 
+00158  C0FD 6  20 3D C1              JSR REMAINDER10
+00159  C100 4  8D 72 C2              STA DIGIT
+00160  C103 2  18                    CLC
+00161  C104 2  69 30                 ADC #48
+00162  C106 4  AE 71 C2              LDX DIGITCOUNT
+00163  C109 5  9D BE C2              STA REVERSETEXT,X
+00164  C10C 6  EE 71 C2              INC DIGITCOUNT
+00165  C10F 6  20 7F C1              JSR QUOTIENT10
+00166  C112 6  20 2E C2              JSR ISWORKZERO
+00167  C115 2* D0 E6                 BNE CONVERTDIGIT
+00168  C117 4  AE 71 C2              LDX DIGITCOUNT
+00169  C11A 2  CA                    DEX
+00170  C11B 2  A0 00                 LDY #0
+00171  C11D               CONVERTREVERSE 
+00172  C11D 4* BD BE C2              LDA REVERSETEXT,X
+00173  C120 5  99 1E C3              STA DECIMALTEXT,Y
+00174  C123 2  C8                    INY
+00175  C124 2  CA                    DEX
+00176  C125 2* 10 F6                 BPL CONVERTREVERSE
+00177  C127 2  A9 00                 LDA #0
+00178  C129 5  99 1E C3              STA DECIMALTEXT,Y
+00179  C12C 4  AE 71 C2              LDX DIGITCOUNT
+00180  C12F 2  18                    CLC
+00181  C130 6  60                    RTS
+00182  C131               CONVERTBAD 
+00183  C131 2  A9 00                 LDA #0
+00184  C133 4  8D 1E C3              STA DECIMALTEXT
+00185  C136 4  8D 71 C2              STA DIGITCOUNT
+00186  C139 2  A2 00                 LDX #0
+00187  C13B 2  38                    SEC
+00188  C13C 6  60                    RTS
+00189  C13D               
+00190  C13D               ; --------------------------------------------------
+00191  C13D               ; RESTO MOD 10: RIDUZIONE MOD 255, MOD 5, PARITA'.
+00192  C13D               ; IL RIPORTO CIRCOLARE CODIFICA 0 ANCHE COME 255;
+00193  C13D               ; POICHE' 5 DIVIDE 255, NON SI CREA AMBIGUITA'.
+00194  C13D               ; --------------------------------------------------
+00195  C13D               REMAINDER10 
+00196  C13D 2  A9 00                 LDA #0
+00197  C13F 2  A2 00                 LDX #0
+00198  C141 4  AC 70 C2              LDY WORKLEN
+00199  C144               REMAINDERBYTES 
+00200  C144 2  18                    CLC
+00201  C145 4* 7D 7C C2              ADC WORK,X
+00202  C148 2  69 00                 ADC #0        ; RIPORTO CIRC. (NO OVF).
+00203  C14A 2  E8                    INX
+00204  C14B 2  88                    DEY
+00205  C14C 2* D0 F6                 BNE REMAINDERBYTES
+00206  C14E 4  8D 73 C2              STA SMALLTEMP
+00207  C151 2  29 0F                 AND #15
+00208  C153 4  8D 74 C2              STA SMALLLOW
+00209  C156 4  AD 73 C2              LDA SMALLTEMP
+00210  C159 2  4A                    LSR A
+00211  C15A 2  4A                    LSR A
+00212  C15B 2  4A                    LSR A
+00213  C15C 2  4A                    LSR A
+00214  C15D 2  18                    CLC
+00215  C15E 4  6D 74 C2              ADC SMALLLOW  ; 16=1 (MOD 5): SUM<=30.
+00216  C161               REMAINDERFIVE 
+00217  C161 2  C9 05                 CMP #5
+00218  C163 2* 90 05                 BCC REMAINDERPARITY
+00219  C165 2  E9 05                 SBC #5        ; CMP HA POSTO C=1.
+00220  C167 3  4C 61 C1              JMP REMAINDERFIVE
+00221  C16A               REMAINDERPARITY 
+00222  C16A 4  8D 74 C2              STA SMALLLOW  ; N MOD 5 (TRA 0 E 4).
+00223  C16D 4  4D 7C C2              EOR WORK
+00224  C170 2  29 01                 AND #1
+00225  C172 2* F0 07                 BEQ REMAINDERKEEP
+00226  C174 4  AD 74 C2              LDA SMALLLOW
+00227  C177 2  18                    CLC
+00228  C178 2  69 05                 ADC #5
+00229  C17A 6  60                    RTS
+00230  C17B               REMAINDERKEEP 
+00231  C17B 4  AD 74 C2              LDA SMALLLOW
+00232  C17E 6  60                    RTS
+00233  C17F               
+00234  C17F               ; --------------------------------------------------
+00235  C17F               ; QUOTIENT10: WORK <- (WORK - DIGIT) / 10.
+00236  C17F               ; IDENTITA': M/10 = 51*(M/2)/255, CON 10 | M.
+00237  C17F               ; UN BYTE DI GUARDIA BASTA: 51*(M/2) < 26*256^N.
+00238  C17F               ; --------------------------------------------------
+00239  C17F               QUOTIENT10 
+00240  C17F 2  38                    SEC
+00241  C180 4  AD 7C C2              LDA WORK
+00242  C183 4  ED 72 C2              SBC DIGIT
+00243  C186 4  8D 7C C2              STA WORK
+00244  C189 4  AE 6F C2              LDX INPUTLEN
+00245  C18C 2  A0 01                 LDY #1
+00246  C18E               SUBTRACTDIGIT 
+00247  C18E 4* B9 7C C2              LDA WORK,Y
+00248  C191 2  E9 00                 SBC #0
+00249  C193 5  99 7C C2              STA WORK,Y
+00250  C196 2  C8                    INY
+00251  C197 2  CA                    DEX           ; NON ALTERA C (PRESTITO).
+00252  C198 2* D0 F4                 BNE SUBTRACTDIGIT
+00253  C19A 4  AE 70 C2              LDX WORKLEN
+00254  C19D 2  CA                    DEX
+00255  C19E 2  18                    CLC
+00256  C19F               DIVIDETWO
+00257  C19F 7  7E 7C C2              ROR WORK,X
+00258  C1A2 2  CA                    DEX
+00259  C1A3 2* 10 FA                 BPL DIVIDETWO
+00260  C1A5 6  20 C4 C1              JSR COPYWORK
+00261  C1A8 6  20 D4 C1              JSR SHIFTWORK ; 2X.
+00262  C1AB 6  20 E2 C1              JSR ADDTEMP   ; 3X.
+00263  C1AE 6  20 C4 C1              JSR COPYWORK
+00264  C1B1 6  20 D4 C1              JSR SHIFTWORK
+00265  C1B4 6  20 D4 C1              JSR SHIFTWORK
+00266  C1B7 6  20 D4 C1              JSR SHIFTWORK
+00267  C1BA 6  20 D4 C1              JSR SHIFTWORK ; 16*(3X).
+00268  C1BD 6  20 E2 C1              JSR ADDTEMP   ; 17*(3X) = 51X.
+00269  C1C0 6  20 F6 C1              JSR DIV255EXACT
+00270  C1C3 6  60                    RTS
+00271  C1C4               
+00272  C1C4               COPYWORK
+00273  C1C4 2  A2 00                 LDX #0
+00274  C1C6 4  AC 70 C2              LDY WORKLEN
+00275  C1C9               COPYWORKLOOP 
+00276  C1C9 4* BD 7C C2              LDA WORK,X
+00277  C1CC 5  9D 9D C2              STA TEMP,X
+00278  C1CF 2  E8                    INX
+00279  C1D0 2  88                    DEY
+00280  C1D1 2* D0 F6                 BNE COPYWORKLOOP
+00281  C1D3 6  60                    RTS
+00282  C1D4               
+00283  C1D4               SHIFTWORK
+00284  C1D4 2  18                    CLC
+00285  C1D5 2  A2 00                 LDX #0
+00286  C1D7 4  AC 70 C2              LDY WORKLEN
+00287  C1DA               SHIFTWORKLOOP 
+00288  C1DA 7  3E 7C C2              ROL WORK,X
+00289  C1DD 2  E8                    INX
+00290  C1DE 2  88                    DEY
+00291  C1DF 2* D0 F9                 BNE SHIFTWORKLOOP
+00292  C1E1 6  60                    RTS
+00293  C1E2               
+00294  C1E2               ADDTEMP
+00295  C1E2 2  18                    CLC
+00296  C1E3 2  A2 00                 LDX #0
+00297  C1E5 4  AC 70 C2              LDY WORKLEN
+00298  C1E8               ADDTEMPLOOP 
+00299  C1E8 4* BD 7C C2              LDA WORK,X
+00300  C1EB 4* 7D 9D C2              ADC TEMP,X
+00301  C1EE 5  9D 7C C2              STA WORK,X
+00302  C1F1 2  E8                    INX
+00303  C1F2 2  88                    DEY
+00304  C1F3 2* D0 F3                 BNE ADDTEMPLOOP
+00305  C1F5 6  60                    RTS
+00306  C1F6               
+00307  C1F6               ; --------------------------------------------------
+00308  C1F6               ; ARAZI-NACCACHE /255: COMPLEMENTO E SOMMA FUSI.
+00309  C1F6               ; PRE:  D=0; WORKLEN=1..33; WORK MULT. DI 255 >= 0.
+00310  C1F6               ; POST: WORK = QUOZIENTE ESATTO, IN LOCO (LE).
+00311  C1F6               ; A = CIFRA PREC. DEL QUOZIENTE; C = 1 - PRESTITO.
+00312  C1F6               ; INX, DEY, BNE, STA NON ALTERANO C (NO CMP/CPX).
+00313  C1F6               ; --------------------------------------------------
+00314  C1F6               DIV255EXACT 
+00315  C1F6 2  A9 00                 LDA #0
+00316  C1F8 2  38                    SEC
+00317  C1F9 2  A2 00                 LDX #0
+00318  C1FB 4  AC 70 C2              LDY WORKLEN
+00319  C1FE               DIV255LOOP 
+00320  C1FE 4* FD 7C C2              SBC WORK,X
+00321  C201 5  9D 7C C2              STA WORK,X
+00322  C204 2  E8                    INX
+00323  C205 2  88                    DEY
+00324  C206 2* D0 F6                 BNE DIV255LOOP
+00325  C208 6  60                    RTS
+00326  C209               
+00327  C209               ; VERSIONE DIDATTICA IN DUE PASSATE (COLLAUDO):
+00328  C209               ; CALCOLA -WORK MOD 256^WORKLEN, POI SOMME PREFISSE.
+00329  C209               DIV255REFERENCE 
+00330  C209 2  38                    SEC
+00331  C20A 2  A2 00                 LDX #0
+00332  C20C 4  AC 70 C2              LDY WORKLEN
+00333  C20F               DIV255COMPLEMENT 
+00334  C20F 2  A9 00                 LDA #0
+00335  C211 4* FD 7C C2              SBC WORK,X
+00336  C214 5  9D 7C C2              STA WORK,X
+00337  C217 2  E8                    INX
+00338  C218 2  88                    DEY
+00339  C219 2* D0 F4                 BNE DIV255COMPLEMENT
+00340  C21B 2  18                    CLC
+00341  C21C 2  A9 00                 LDA #0
+00342  C21E 2  A2 00                 LDX #0
+00343  C220 4  AC 70 C2              LDY WORKLEN
+00344  C223               DIV255PREFIX 
+00345  C223 4* 7D 7C C2              ADC WORK,X
+00346  C226 5  9D 7C C2              STA WORK,X
+00347  C229 2  E8                    INX
+00348  C22A 2  88                    DEY
+00349  C22B 2* D0 F6                 BNE DIV255PREFIX
+00350  C22D 6  60                    RTS
+00351  C22E               
+00352  C22E               ISWORKZERO 
+00353  C22E 2  A9 00                 LDA #0
+00354  C230 4  AE 70 C2              LDX WORKLEN
+00355  C233 2  CA                    DEX
+00356  C234               ISWORKZEROLOOP 
+00357  C234 4* 1D 7C C2              ORA WORK,X
+00358  C237 2  CA                    DEX
+00359  C238 2* 10 FA                 BPL ISWORKZEROLOOP
+00360  C23A 2  C9 00                 CMP #0        ; RICOSTRUISCE Z DOPO DEX.
+00361  C23C 6  60                    RTS
+00362  C23D               
+00363  C23D               ; STAMPA DI SERVIZIO: X/Y PTR PETSCII TERM. DA 0.
+00364  C23D               ; SALVA $FB/$FC; INDICE INDIPENDENTE DAL KERNAL.
+00365  C23D               PRINTSTRING 
+00366  C23D 4  8E 75 C2              STX ARGLO
+00367  C240 4  8C 76 C2              STY ARGHI
+00368  C243 3  A5 FB                 LDA SOURCE
+00369  C245 3  48                    PHA
+00370  C246 3  A5 FC                 LDA SOURCE+1
+00371  C248 3  48                    PHA
+00372  C249 4  AD 75 C2              LDA ARGLO
+00373  C24C 3  85 FB                 STA SOURCE
+00374  C24E 4  AD 76 C2              LDA ARGHI
+00375  C251 3  85 FC                 STA SOURCE+1
+00376  C253 2  A9 00                 LDA #0
+00377  C255 4  8D 79 C2              STA PRINTINDEX
+00378  C258               PRINTSTRINGLOOP 
+00379  C258 4  AC 79 C2              LDY PRINTINDEX
+00380  C25B 5* B1 FB                 LDA (SOURCE),Y
+00381  C25D 2* F0 09                 BEQ PRINTSTRINGDONE
+00382  C25F 6  20 D2 FF              JSR PRINTCHR
+00383  C262 6  EE 79 C2              INC PRINTINDEX
+00384  C265 3  4C 58 C2              JMP PRINTSTRINGLOOP
+00385  C268               PRINTSTRINGDONE 
+00386  C268 4  68                    PLA
+00387  C269 3  85 FC                 STA SOURCE+1
+00388  C26B 4  68                    PLA
+00389  C26C 3  85 FB                 STA SOURCE
+00390  C26E 6  60                    RTS
+00391  C26F               
+00392  C26F               ; --------------------------------------------------
+00393  C26F               ; MEMORIA DI LAVORO (NESSUNA CHIAMATA BASIC/KERNAL
+00394  C26F               ; DA PARTE DELLE ROUTINE ARITMETICHE).
+00395  C26F               ; --------------------------------------------------
+00396  C26F    00         INPUTLEN   BYTE 0
+00397  C270    00         WORKLEN    BYTE 0
+00398  C271    00         DIGITCOUNT BYTE 0
+00399  C272    00         DIGIT      BYTE 0
+00400  C273    00         SMALLTEMP  BYTE 0
+00401  C274    00         SMALLLOW   BYTE 0
+00402  C275    00         ARGLO      BYTE 0
+00403  C276    00         ARGHI      BYTE 0
+00404  C277    00 00      SAVESOURCE BYTE 0,0
+00405  C279    00         PRINTINDEX BYTE 0
+00406  C27A    00         DEMOCASE   BYTE 0
+00407  C27B    00         DEMOPAGE   BYTE 0
+00408  C27C    00 00 00   WORK       DCB MAXBYTES+1, 0
+00409  C29D    00 00 00   TEMP       DCB MAXBYTES+1, 0
+00410  C2BE    00 00 00   REVERSETEXT DCB MAXTEXT, 0
+00411  C31E    00 00 00   DECIMALTEXT DCB MAXTEXT+1, 0
+00412  C37F               
+00413  C37F               ; --------------------------------------------------
+00414  C37F               ; TESTI PETSCII ESPLICITI (EDITOR IRRILEVANTE).
+00415  C37F               ; TABELLE E MESSAGGI VERIFICATI DA TESTS/BUILD.PY.
+00416  C37F               ; --------------------------------------------------
+00417  C37F               ; DATI DEMO PETSCII (TESTS/BUILD.PY). ASCII, MIT.
+00418  C37F               TITLE1
+00419  C37F    41 52 41              BYTE $41,$52,$41,$5A,$49,$2D,$4E,$41
+00420  C387    43 43 41              BYTE $43,$43,$41,$43,$48,$45,$20,$2F
+00421  C38F    20 4D 4F              BYTE $20,$4D,$4F,$53,$20,$36,$35,$30
+00422  C397    32 2D 36              BYTE $32,$2D,$36,$35,$31,$30,$0D,$42
+00423  C39F    49 4E 41              BYTE $49,$4E,$41,$52,$49,$4F,$20,$2D
+00424  C3A7    3E 20 44              BYTE $3E,$20,$44,$45,$43,$49,$4D,$41
+00425  C3AF    4C 45 20              BYTE $4C,$45,$20,$2F,$20,$4B,$45,$52
+00426  C3B7    4E 41 4C              BYTE $4E,$41,$4C,$20,$24,$46,$46,$44
+00427  C3BF    32 0D 0D              BYTE $32,$0D,$0D,$00
+00428  C3C3               TITLE2
+00429  C3C3    41 52 41              BYTE $41,$52,$41,$5A,$49,$2D,$4E,$41
+00430  C3CB    43 43 41              BYTE $43,$43,$41,$43,$48,$45,$20,$2F
+00431  C3D3    20 4D 55              BYTE $20,$4D,$55,$4C,$54,$49,$50,$52
+00432  C3DB    45 43 49              BYTE $45,$43,$49,$53,$49,$4F,$4E,$45
+00433  C3E3    0D 53 54              BYTE $0D,$53,$54,$45,$53,$53,$41,$20
+00434  C3EB    52 4F 55              BYTE $52,$4F,$55,$54,$49,$4E,$45,$2C
+00435  C3F3    20 46 49              BYTE $20,$46,$49,$4E,$4F,$20,$41,$20
+00436  C3FB    33 32 20              BYTE $33,$32,$20,$42,$59,$54,$45,$0D
+00437  C403    0D 00                 BYTE $0D,$00
+00438  C405               PROMPT1
+00439  C405    0D 53 50              BYTE $0D,$53,$50,$41,$5A,$49,$4F,$3A
+00440  C40D    20 49 4E              BYTE $20,$49,$4E,$54,$45,$52,$49,$20
+00441  C415    41 20 36              BYTE $41,$20,$36,$34,$2C,$20,$31,$32
+00442  C41D    38 20 45              BYTE $38,$20,$45,$20,$32,$35,$36,$20
+00443  C425    42 49 54              BYTE $42,$49,$54,$00
+00444  C429               PROMPT2
+00445  C429    0D 53 50              BYTE $0D,$53,$50,$41,$5A,$49,$4F,$3A
+00446  C431    20 52 49              BYTE $20,$52,$49,$54,$4F,$52,$4E,$4F
+00447  C439    20 41 4C              BYTE $20,$41,$4C,$20,$42,$41,$53,$49
+00448  C441    43 00                 BYTE $43,$00
+00449  C443               ERRORTEXT
+00450  C443    45 52 52              BYTE $45,$52,$52,$4F,$52,$45,$3A,$20
+00451  C44B    4C 55 4E              BYTE $4C,$55,$4E,$47,$48,$45,$5A,$5A
+00452  C453    41 20 4E              BYTE $41,$20,$4E,$4F,$4E,$20,$56,$41
+00453  C45B    4C 49 44              BYTE $4C,$49,$44,$41,$00
+00454  C460               NAME0
+00455  C460    5A 45 52              BYTE $5A,$45,$52,$4F,$3A,$20,$00
+00456  C467               VALUE0
+00457  C467    00                    BYTE $00
+00458  C468               NAME1
+00459  C468    55 4E 4F              BYTE $55,$4E,$4F,$3A,$20,$00
+00460  C46E               VALUE1
+00461  C46E    01                    BYTE $01
+00462  C46F               NAME2
+00463  C46F    4E 4F 56              BYTE $4E,$4F,$56,$45,$3A,$20,$00
+00464  C476               VALUE2
+00465  C476    09                    BYTE $09
+00466  C477               NAME3
+00467  C477    44 49 45              BYTE $44,$49,$45,$43,$49,$3A,$20,$00
+00468  C47F               VALUE3
+00469  C47F    0A                    BYTE $0A
+00470  C480               NAME4
+00471  C480    32 35 35              BYTE $32,$35,$35,$3A,$20,$00
+00472  C486               VALUE4
+00473  C486    FF                    BYTE $FF
+00474  C487               NAME5
+00475  C487    32 35 36              BYTE $32,$35,$36,$3A,$20,$00
+00476  C48D               VALUE5
+00477  C48D    00 01                 BYTE $00,$01
+00478  C48F               NAME6
+00479  C48F    4D 41 58              BYTE $4D,$41,$58,$20,$31,$36,$20,$42
+00480  C497    49 54 3A              BYTE $49,$54,$3A,$20,$00
+00481  C49C               VALUE6
+00482  C49C    FF FF                 BYTE $FF,$FF
+00483  C49E               NAME7
+00484  C49E    4D 41 58              BYTE $4D,$41,$58,$20,$33,$32,$20,$42
+00485  C4A6    49 54 3A              BYTE $49,$54,$3A,$20,$00
+00486  C4AB               VALUE7
+00487  C4AB    FF FF FF              BYTE $FF,$FF,$FF,$FF
+00488  C4AF               NAME8
+00489  C4AF    4D 41 58              BYTE $4D,$41,$58,$20,$36,$34,$20,$42
+00490  C4B7    49 54 3A              BYTE $49,$54,$3A,$0D,$00
+00491  C4BC               VALUE8
+00492  C4BC    FF FF FF              BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+00493  C4C4               NAME9
+00494  C4C4    0D 4D 41              BYTE $0D,$4D,$41,$58,$20,$31,$32,$38
+00495  C4CC    20 42 49              BYTE $20,$42,$49,$54,$3A,$0D,$00
+00496  C4D3               VALUE9
+00497  C4D3    FF FF FF              BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+00498  C4DB    FF FF FF              BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+00499  C4E3               NAME10
+00500  C4E3    0D 4D 41              BYTE $0D,$4D,$41,$58,$20,$32,$35,$36
+00501  C4EB    20 42 49              BYTE $20,$42,$49,$54,$3A,$0D,$00
+00502  C4F2               VALUE10
+00503  C4F2    FF FF FF              BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+00504  C4FA    FF FF FF              BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+00505  C502    FF FF FF              BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+00506  C50A    FF FF FF              BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+00507  C512               NAMELO
+00508  C512    60 68 6F              BYTE <NAME0,<NAME1,<NAME2,<NAME3
+00509  C516    80 87 8F              BYTE <NAME4,<NAME5,<NAME6,<NAME7
+00510  C51A    AF C4 E3              BYTE <NAME8,<NAME9,<NAME10
+00511  C51D               NAMEHI
+00512  C51D    C4 C4 C4              BYTE >NAME0,>NAME1,>NAME2,>NAME3
+00513  C521    C4 C4 C4              BYTE >NAME4,>NAME5,>NAME6,>NAME7
+00514  C525    C4 C4 C4              BYTE >NAME8,>NAME9,>NAME10
+00515  C528               VALUELO
+00516  C528    67 6E 76              BYTE <VALUE0,<VALUE1,<VALUE2,<VALUE3
+00517  C52C    86 8D 9C              BYTE <VALUE4,<VALUE5,<VALUE6,<VALUE7
+00518  C530    BC D3 F2              BYTE <VALUE8,<VALUE9,<VALUE10
+00519  C533               VALUEHI
+00520  C533    C4 C4 C4              BYTE >VALUE0,>VALUE1,>VALUE2,>VALUE3
+00521  C537    C4 C4 C4              BYTE >VALUE4,>VALUE5,>VALUE6,>VALUE7
+00522  C53B    C4 C4 C4              BYTE >VALUE8,>VALUE9,>VALUE10
+00523  C53E               VALUELEN
+00524  C53E    01 01 01              BYTE 1,1,1,1,1,2,2,4,8,16,32
+00525  C549               ; --------------------------------------------------
+00526  C549               ; EOF: AN_BCD.ASM
+00527  C549               ; --------------------------------------------------

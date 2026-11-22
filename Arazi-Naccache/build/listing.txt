@@ -1,0 +1,488 @@
+
+; 64tass Turbo Assembler Macro V1.59.3120 listing file
+; 64tass --m6502 --cbm-prg --labels /workspace/scratch/8b4c4d959ee6/AraziNaccache_C64/AraziNaccache/build/labels.txt --list /workspace/scratch/8b4c4d959ee6/AraziNaccache_C64/AraziNaccache/build/listing.txt -o /workspace/scratch/8b4c4d959ee6/AraziNaccache_C64/AraziNaccache/build/AraziNaccache.prg /workspace/scratch/8b4c4d959ee6/AraziNaccache_C64/AraziNaccache/build/64tass/AraziNaccache.asm
+; Wed Nov 18 11:59:27 2026
+
+;Offset	;Hex		;Monitor	;Source
+
+;******  Processing input file: /workspace/scratch/8b4c4d959ee6/AraziNaccache_C64/AraziNaccache/build/64tass/AraziNaccache.asm
+
+=$ffd2					PrintChr = $FFD2                ; KERNAL CHROUT: carattere PETSCII in A.
+=$ffcc					ClrChn   = $FFCC                ; Ripristina i canali standard.
+=$ffe4					GetIn    = $FFE4                ; Lettura non bloccante della tastiera.
+=$fb					Source   = $FB                  ; Puntatore temporaneo; viene ripristinato.
+=32					MaxBytes = 32                   ; Da 1 a 32 byte, cioe' fino a 256 bit.
+=96					MaxText  = 3*MaxBytes           ; Limite superiore, piu' il terminatore.
+.c000	d8		cld		Start   CLD
+.c001	20 cc ff	jsr $ffcc	        JSR ClrChn
+.c004	a9 93		lda #$93	        LDA #147
+.c006	20 d2 ff	jsr $ffd2	        JSR PrintChr
+.c009	a9 00		lda #$00	        LDA #0
+.c00b	8d 7b c2	sta $c27b	        STA DemoPage
+.c00e	8d 7a c2	sta $c27a	        STA DemoCase
+.c011	a2 7f		ldx #$7f	        LDX #<Title1
+.c013	a0 c3		ldy #$c3	        LDY #>Title1
+.c015	20 3d c2	jsr $c23d	        JSR PrintString
+.c018					DemoLoop
+.c018	ae 7a c2	ldx $c27a	        LDX DemoCase
+.c01b	e0 08		cpx #$08	        CPX #8
+.c01d	d0 1e		bne $c03d	        BNE DemoNext
+.c01f	ad 7b c2	lda $c27b	        LDA DemoPage
+.c022	d0 19		bne $c03d	        BNE DemoNext
+.c024	a2 05		ldx #$05	        LDX #<Prompt1
+.c026	a0 c4		ldy #$c4	        LDY #>Prompt1
+.c028	20 3d c2	jsr $c23d	        JSR PrintString
+.c02b					Page1Ready
+.c02b	20 8d c0	jsr $c08d	        JSR WaitSpace
+.c02e	ee 7b c2	inc $c27b	        INC DemoPage
+.c031	a9 93		lda #$93	        LDA #147
+.c033	20 d2 ff	jsr $ffd2	        JSR PrintChr
+.c036	a2 c3		ldx #$c3	        LDX #<Title2
+.c038	a0 c3		ldy #$c3	        LDY #>Title2
+.c03a	20 3d c2	jsr $c23d	        JSR PrintString
+.c03d					DemoNext
+.c03d	ae 7a c2	ldx $c27a	        LDX DemoCase
+.c040	e0 0b		cpx #$0b	        CPX #11
+.c042	f0 39		beq $c07d	        BEQ DemoDone
+.c044	bd 12 c5	lda $c512,x	        LDA NameLo,X
+.c047	bc 1d c5	ldy $c51d,x	        LDY NameHi,X
+.c04a	aa		tax		        TAX
+.c04b	20 3d c2	jsr $c23d	        JSR PrintString
+.c04e	ae 7a c2	ldx $c27a	        LDX DemoCase
+.c051	bd 28 c5	lda $c528,x	        LDA ValueLo,X
+.c054	8d 75 c2	sta $c275	        STA ArgLo
+.c057	bd 33 c5	lda $c533,x	        LDA ValueHi,X
+.c05a	8d 76 c2	sta $c276	        STA ArgHi
+.c05d	bd 3e c5	lda $c53e,x	        LDA ValueLen,X
+.c060	ae 75 c2	ldx $c275	        LDX ArgLo
+.c063	ac 76 c2	ldy $c276	        LDY ArgHi
+.c066	20 95 c0	jsr $c095	        JSR PrintNumber
+.c069	90 07		bcc $c072	        BCC DemoGood
+.c06b	a2 43		ldx #$43	        LDX #<ErrorText
+.c06d	a0 c4		ldy #$c4	        LDY #>ErrorText
+.c06f	20 3d c2	jsr $c23d	        JSR PrintString
+.c072					DemoGood
+.c072	a9 0d		lda #$0d	        LDA #13
+.c074	20 d2 ff	jsr $ffd2	        JSR PrintChr
+.c077	ee 7a c2	inc $c27a	        INC DemoCase
+.c07a	4c 18 c0	jmp $c018	        JMP DemoLoop
+.c07d					DemoDone
+.c07d	a2 29		ldx #$29	        LDX #<Prompt2
+.c07f	a0 c4		ldy #$c4	        LDY #>Prompt2
+.c081	20 3d c2	jsr $c23d	        JSR PrintString
+.c084					Page2Ready
+.c084	20 8d c0	jsr $c08d	        JSR WaitSpace
+.c087	a9 0d		lda #$0d	        LDA #13
+.c089	20 d2 ff	jsr $ffd2	        JSR PrintChr
+.c08c	60		rts		        RTS
+.c08d					WaitSpace
+.c08d	20 e4 ff	jsr $ffe4	        JSR GetIn
+.c090	c9 20		cmp #$20	        CMP #32
+.c092	d0 f9		bne $c08d	        BNE WaitSpace
+.c094	60		rts		        RTS
+.c095					PrintNumber
+.c095	20 b2 c0	jsr $c0b2	        JSR ConvertNumber
+.c098	b0 17		bcs $c0b1	        BCS PrintNumberEnd
+.c09a	a9 00		lda #$00	        LDA #0
+.c09c	8d 79 c2	sta $c279	        STA PrintIndex
+.c09f					PrintNumberLoop
+.c09f	ae 79 c2	ldx $c279	        LDX PrintIndex
+.c0a2	bd 1e c3	lda $c31e,x	        LDA DecimalText,X
+.c0a5	f0 09		beq $c0b0	        BEQ PrintNumberOK
+.c0a7	20 d2 ff	jsr $ffd2	        JSR PrintChr
+.c0aa	ee 79 c2	inc $c279	        INC PrintIndex
+.c0ad	4c 9f c0	jmp $c09f	        JMP PrintNumberLoop
+.c0b0					PrintNumberOK
+.c0b0	18		clc		        CLC
+.c0b1					PrintNumberEnd
+.c0b1	60		rts		        RTS
+.c0b2					ConvertNumber
+.c0b2	d8		cld		        CLD
+.c0b3	c9 01		cmp #$01	        CMP #1
+.c0b5	90 7a		bcc $c131	        BCC ConvertBad
+.c0b7	c9 21		cmp #$21	        CMP #MaxBytes+1
+.c0b9	b0 76		bcs $c131	        BCS ConvertBad
+.c0bb	8d 6f c2	sta $c26f	        STA InputLen
+.c0be	8e 75 c2	stx $c275	        STX ArgLo
+.c0c1	8c 76 c2	sty $c276	        STY ArgHi
+.c0c4	a5 fb		lda $fb		        LDA Source
+.c0c6	8d 77 c2	sta $c277	        STA SaveSource
+.c0c9	a5 fc		lda $fc		        LDA Source+1
+.c0cb	8d 78 c2	sta $c278	        STA SaveSource+1
+.c0ce	ad 75 c2	lda $c275	        LDA ArgLo
+.c0d1	85 fb		sta $fb		        STA Source
+.c0d3	ad 76 c2	lda $c276	        LDA ArgHi
+.c0d6	85 fc		sta $fc		        STA Source+1
+.c0d8	a9 00		lda #$00	        LDA #0
+.c0da	8d 71 c2	sta $c271	        STA DigitCount
+.c0dd	a0 00		ldy #$00	        LDY #0
+.c0df					ConvertCopy
+.c0df	b1 fb		lda ($fb),y	        LDA (Source),Y
+.c0e1	99 7c c2	sta $c27c,y	        STA Work,Y
+.c0e4	c8		iny		        INY
+.c0e5	cc 6f c2	cpy $c26f	        CPY InputLen
+.c0e8	d0 f5		bne $c0df	        BNE ConvertCopy
+.c0ea	a9 00		lda #$00	        LDA #0
+.c0ec	99 7c c2	sta $c27c,y	        STA Work,Y              ; Byte di guardia per il prodotto per 51.
+.c0ef	c8		iny		        INY
+.c0f0	8c 70 c2	sty $c270	        STY WorkLen
+.c0f3	ad 77 c2	lda $c277	        LDA SaveSource
+.c0f6	85 fb		sta $fb		        STA Source
+.c0f8	ad 78 c2	lda $c278	        LDA SaveSource+1
+.c0fb	85 fc		sta $fc		        STA Source+1
+.c0fd					ConvertDigit
+.c0fd	20 3d c1	jsr $c13d	        JSR Remainder10
+.c100	8d 72 c2	sta $c272	        STA Digit
+.c103	18		clc		        CLC
+.c104	69 30		adc #$30	        ADC #48
+.c106	ae 71 c2	ldx $c271	        LDX DigitCount
+.c109	9d be c2	sta $c2be,x	        STA ReverseText,X
+.c10c	ee 71 c2	inc $c271	        INC DigitCount
+.c10f	20 7f c1	jsr $c17f	        JSR Quotient10
+.c112	20 2e c2	jsr $c22e	        JSR IsWorkZero
+.c115	d0 e6		bne $c0fd	        BNE ConvertDigit
+.c117	ae 71 c2	ldx $c271	        LDX DigitCount
+.c11a	ca		dex		        DEX
+.c11b	a0 00		ldy #$00	        LDY #0
+.c11d					ConvertReverse
+.c11d	bd be c2	lda $c2be,x	        LDA ReverseText,X
+.c120	99 1e c3	sta $c31e,y	        STA DecimalText,Y
+.c123	c8		iny		        INY
+.c124	ca		dex		        DEX
+.c125	10 f6		bpl $c11d	        BPL ConvertReverse
+.c127	a9 00		lda #$00	        LDA #0
+.c129	99 1e c3	sta $c31e,y	        STA DecimalText,Y
+.c12c	ae 71 c2	ldx $c271	        LDX DigitCount
+.c12f	18		clc		        CLC
+.c130	60		rts		        RTS
+.c131					ConvertBad
+.c131	a9 00		lda #$00	        LDA #0
+.c133	8d 1e c3	sta $c31e	        STA DecimalText
+.c136	8d 71 c2	sta $c271	        STA DigitCount
+.c139	a2 00		ldx #$00	        LDX #0
+.c13b	38		sec		        SEC
+.c13c	60		rts		        RTS
+.c13d					Remainder10
+.c13d	a9 00		lda #$00	        LDA #0
+.c13f	a2 00		ldx #$00	        LDX #0
+.c141	ac 70 c2	ldy $c270	        LDY WorkLen
+.c144					RemainderBytes
+.c144	18		clc		        CLC
+.c145	7d 7c c2	adc $c27c,x	        ADC Work,X
+.c148	69 00		adc #$00	        ADC #0                  ; Riporto circolare; qui non puo' traboccare.
+.c14a	e8		inx		        INX
+.c14b	88		dey		        DEY
+.c14c	d0 f6		bne $c144	        BNE RemainderBytes
+.c14e	8d 73 c2	sta $c273	        STA SmallTemp
+.c151	29 0f		and #$0f	        AND #15
+.c153	8d 74 c2	sta $c274	        STA SmallLow
+.c156	ad 73 c2	lda $c273	        LDA SmallTemp
+.c159	4a		lsr a		        LSR A
+.c15a	4a		lsr a		        LSR A
+.c15b	4a		lsr a		        LSR A
+.c15c	4a		lsr a		        LSR A
+.c15d	18		clc		        CLC
+.c15e	6d 74 c2	adc $c274	        ADC SmallLow            ; 16 = 1 (mod 5): somma <= 30.
+.c161					RemainderFive
+.c161	c9 05		cmp #$05	        CMP #5
+.c163	90 05		bcc $c16a	        BCC RemainderParity
+.c165	e9 05		sbc #$05	        SBC #5                  ; CMP ha predisposto C=1.
+.c167	4c 61 c1	jmp $c161	        JMP RemainderFive
+.c16a					RemainderParity
+.c16a	8d 74 c2	sta $c274	        STA SmallLow            ; SmallLow = N mod 5, tra 0 e 4.
+.c16d	4d 7c c2	eor $c27c	        EOR Work
+.c170	29 01		and #$01	        AND #1
+.c172	f0 07		beq $c17b	        BEQ RemainderKeep
+.c174	ad 74 c2	lda $c274	        LDA SmallLow
+.c177	18		clc		        CLC
+.c178	69 05		adc #$05	        ADC #5
+.c17a	60		rts		        RTS
+.c17b					RemainderKeep
+.c17b	ad 74 c2	lda $c274	        LDA SmallLow
+.c17e	60		rts		        RTS
+.c17f					Quotient10
+.c17f	38		sec		        SEC
+.c180	ad 7c c2	lda $c27c	        LDA Work
+.c183	ed 72 c2	sbc $c272	        SBC Digit
+.c186	8d 7c c2	sta $c27c	        STA Work
+.c189	ae 6f c2	ldx $c26f	        LDX InputLen
+.c18c	a0 01		ldy #$01	        LDY #1
+.c18e					SubtractDigit
+.c18e	b9 7c c2	lda $c27c,y	        LDA Work,Y
+.c191	e9 00		sbc #$00	        SBC #0
+.c193	99 7c c2	sta $c27c,y	        STA Work,Y
+.c196	c8		iny		        INY
+.c197	ca		dex		        DEX                     ; Non altera C: propaga il prestito.
+.c198	d0 f4		bne $c18e	        BNE SubtractDigit
+.c19a	ae 70 c2	ldx $c270	        LDX WorkLen
+.c19d	ca		dex		        DEX
+.c19e	18		clc		        CLC
+.c19f					DivideTwo
+.c19f	7e 7c c2	ror $c27c,x	        ROR Work,X
+.c1a2	ca		dex		        DEX
+.c1a3	10 fa		bpl $c19f	        BPL DivideTwo
+.c1a5	20 c4 c1	jsr $c1c4	        JSR CopyWork
+.c1a8	20 d4 c1	jsr $c1d4	        JSR ShiftWork           ; 2X.
+.c1ab	20 e2 c1	jsr $c1e2	        JSR AddTemp             ; 3X.
+.c1ae	20 c4 c1	jsr $c1c4	        JSR CopyWork
+.c1b1	20 d4 c1	jsr $c1d4	        JSR ShiftWork
+.c1b4	20 d4 c1	jsr $c1d4	        JSR ShiftWork
+.c1b7	20 d4 c1	jsr $c1d4	        JSR ShiftWork
+.c1ba	20 d4 c1	jsr $c1d4	        JSR ShiftWork           ; 16*(3X).
+.c1bd	20 e2 c1	jsr $c1e2	        JSR AddTemp             ; 17*(3X) = 51X.
+.c1c0	20 f6 c1	jsr $c1f6	        JSR Div255Exact
+.c1c3	60		rts		        RTS
+.c1c4					CopyWork
+.c1c4	a2 00		ldx #$00	        LDX #0
+.c1c6	ac 70 c2	ldy $c270	        LDY WorkLen
+.c1c9					CopyWorkLoop
+.c1c9	bd 7c c2	lda $c27c,x	        LDA Work,X
+.c1cc	9d 9d c2	sta $c29d,x	        STA Temp,X
+.c1cf	e8		inx		        INX
+.c1d0	88		dey		        DEY
+.c1d1	d0 f6		bne $c1c9	        BNE CopyWorkLoop
+.c1d3	60		rts		        RTS
+.c1d4					ShiftWork
+.c1d4	18		clc		        CLC
+.c1d5	a2 00		ldx #$00	        LDX #0
+.c1d7	ac 70 c2	ldy $c270	        LDY WorkLen
+.c1da					ShiftWorkLoop
+.c1da	3e 7c c2	rol $c27c,x	        ROL Work,X
+.c1dd	e8		inx		        INX
+.c1de	88		dey		        DEY
+.c1df	d0 f9		bne $c1da	        BNE ShiftWorkLoop
+.c1e1	60		rts		        RTS
+.c1e2					AddTemp
+.c1e2	18		clc		        CLC
+.c1e3	a2 00		ldx #$00	        LDX #0
+.c1e5	ac 70 c2	ldy $c270	        LDY WorkLen
+.c1e8					AddTempLoop
+.c1e8	bd 7c c2	lda $c27c,x	        LDA Work,X
+.c1eb	7d 9d c2	adc $c29d,x	        ADC Temp,X
+.c1ee	9d 7c c2	sta $c27c,x	        STA Work,X
+.c1f1	e8		inx		        INX
+.c1f2	88		dey		        DEY
+.c1f3	d0 f3		bne $c1e8	        BNE AddTempLoop
+.c1f5	60		rts		        RTS
+.c1f6					Div255Exact
+.c1f6	a9 00		lda #$00	        LDA #0
+.c1f8	38		sec		        SEC
+.c1f9	a2 00		ldx #$00	        LDX #0
+.c1fb	ac 70 c2	ldy $c270	        LDY WorkLen
+.c1fe					Div255Loop
+.c1fe	fd 7c c2	sbc $c27c,x	        SBC Work,X
+.c201	9d 7c c2	sta $c27c,x	        STA Work,X
+.c204	e8		inx		        INX
+.c205	88		dey		        DEY
+.c206	d0 f6		bne $c1fe	        BNE Div255Loop
+.c208	60		rts		        RTS
+.c209					Div255Reference
+.c209	38		sec		        SEC
+.c20a	a2 00		ldx #$00	        LDX #0
+.c20c	ac 70 c2	ldy $c270	        LDY WorkLen
+.c20f					Div255Complement
+.c20f	a9 00		lda #$00	        LDA #0
+.c211	fd 7c c2	sbc $c27c,x	        SBC Work,X
+.c214	9d 7c c2	sta $c27c,x	        STA Work,X
+.c217	e8		inx		        INX
+.c218	88		dey		        DEY
+.c219	d0 f4		bne $c20f	        BNE Div255Complement
+.c21b	18		clc		        CLC
+.c21c	a9 00		lda #$00	        LDA #0
+.c21e	a2 00		ldx #$00	        LDX #0
+.c220	ac 70 c2	ldy $c270	        LDY WorkLen
+.c223					Div255Prefix
+.c223	7d 7c c2	adc $c27c,x	        ADC Work,X
+.c226	9d 7c c2	sta $c27c,x	        STA Work,X
+.c229	e8		inx		        INX
+.c22a	88		dey		        DEY
+.c22b	d0 f6		bne $c223	        BNE Div255Prefix
+.c22d	60		rts		        RTS
+.c22e					IsWorkZero
+.c22e	a9 00		lda #$00	        LDA #0
+.c230	ae 70 c2	ldx $c270	        LDX WorkLen
+.c233	ca		dex		        DEX
+.c234					IsWorkZeroLoop
+.c234	1d 7c c2	ora $c27c,x	        ORA Work,X
+.c237	ca		dex		        DEX
+.c238	10 fa		bpl $c234	        BPL IsWorkZeroLoop
+.c23a	c9 00		cmp #$00	        CMP #0                  ; BPL/DEX alterano Z: ricostruire il flag.
+.c23c	60		rts		        RTS
+.c23d					PrintString
+.c23d	8e 75 c2	stx $c275	        STX ArgLo
+.c240	8c 76 c2	sty $c276	        STY ArgHi
+.c243	a5 fb		lda $fb		        LDA Source
+.c245	48		pha		        PHA
+.c246	a5 fc		lda $fc		        LDA Source+1
+.c248	48		pha		        PHA
+.c249	ad 75 c2	lda $c275	        LDA ArgLo
+.c24c	85 fb		sta $fb		        STA Source
+.c24e	ad 76 c2	lda $c276	        LDA ArgHi
+.c251	85 fc		sta $fc		        STA Source+1
+.c253	a9 00		lda #$00	        LDA #0
+.c255	8d 79 c2	sta $c279	        STA PrintIndex
+.c258					PrintStringLoop
+.c258	ac 79 c2	ldy $c279	        LDY PrintIndex
+.c25b	b1 fb		lda ($fb),y	        LDA (Source),Y
+.c25d	f0 09		beq $c268	        BEQ PrintStringDone
+.c25f	20 d2 ff	jsr $ffd2	        JSR PrintChr
+.c262	ee 79 c2	inc $c279	        INC PrintIndex
+.c265	4c 58 c2	jmp $c258	        JMP PrintStringLoop
+.c268					PrintStringDone
+.c268	68		pla		        PLA
+.c269	85 fc		sta $fc		        STA Source+1
+.c26b	68		pla		        PLA
+.c26c	85 fb		sta $fb		        STA Source
+.c26e	60		rts		        RTS
+>c26f	00				InputLen       .byte 0
+>c270	00				WorkLen        .byte 0
+>c271	00				DigitCount     .byte 0
+>c272	00				Digit          .byte 0
+>c273	00				SmallTemp      .byte 0
+>c274	00				SmallLow       .byte 0
+>c275	00				ArgLo          .byte 0
+>c276	00				ArgHi          .byte 0
+>c277	00 00				SaveSource     .byte 0,0
+>c279	00				PrintIndex     .byte 0
+>c27a	00				DemoCase       .byte 0
+>c27b	00				DemoPage       .byte 0
+>c27c	00 00 00 00 00 00 00 00		Work           .fill MaxBytes+1,0
+>c284	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>c294	00 00 00 00 00 00 00 00 00
+>c29d	00 00 00 00 00 00 00 00		Temp           .fill MaxBytes+1,0
+>c2a5	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>c2b5	00 00 00 00 00 00 00 00 00
+>c2be	00 00 00 00 00 00 00 00		ReverseText    .fill MaxText,0
+>c2c6	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+;	...repeated 4 times (64 bytes)...
+>c316	00 00 00 00 00 00 00 00
+>c31e	00 00 00 00 00 00 00 00		DecimalText    .fill MaxText+1,0
+>c326	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+;	...repeated 4 times (64 bytes)...
+>c376	00 00 00 00 00 00 00 00 00
+
+;******  Processing file: /workspace/scratch/8b4c4d959ee6/AraziNaccache_C64/AraziNaccache/build/64tass/demo_data.asm
+
+.c37f					Title1
+>c37f	41 52 41 5a 49 2d 4e 41		        .byte $41,$52,$41,$5A,$49,$2D,$4E,$41,$43,$43,$41,$43
+>c387	43 43 41 43
+>c38b	48 45 20 2f 20 4d 4f 53		        .byte $48,$45,$20,$2F,$20,$4D,$4F,$53,$20,$36,$35,$30
+>c393	20 36 35 30
+>c397	32 2d 36 35 31 30 0d 42		        .byte $32,$2D,$36,$35,$31,$30,$0D,$42,$49,$4E,$41,$52
+>c39f	49 4e 41 52
+>c3a3	49 4f 20 2d 3e 20 44 45		        .byte $49,$4F,$20,$2D,$3E,$20,$44,$45,$43,$49,$4D,$41
+>c3ab	43 49 4d 41
+>c3af	4c 45 20 2f 20 4b 45 52		        .byte $4C,$45,$20,$2F,$20,$4B,$45,$52,$4E,$41,$4C,$20
+>c3b7	4e 41 4c 20
+>c3bb	24 46 46 44 32 0d 0d 00		        .byte $24,$46,$46,$44,$32,$0D,$0D,$00
+.c3c3					Title2
+>c3c3	41 52 41 5a 49 2d 4e 41		        .byte $41,$52,$41,$5A,$49,$2D,$4E,$41,$43,$43,$41,$43
+>c3cb	43 43 41 43
+>c3cf	48 45 20 2f 20 4d 55 4c		        .byte $48,$45,$20,$2F,$20,$4D,$55,$4C,$54,$49,$50,$52
+>c3d7	54 49 50 52
+>c3db	45 43 49 53 49 4f 4e 45		        .byte $45,$43,$49,$53,$49,$4F,$4E,$45,$0D,$53,$54,$45
+>c3e3	0d 53 54 45
+>c3e7	53 53 41 20 52 4f 55 54		        .byte $53,$53,$41,$20,$52,$4F,$55,$54,$49,$4E,$45,$2C
+>c3ef	49 4e 45 2c
+>c3f3	20 46 49 4e 4f 20 41 20		        .byte $20,$46,$49,$4E,$4F,$20,$41,$20,$33,$32,$20,$42
+>c3fb	33 32 20 42
+>c3ff	59 54 45 0d 0d 00		        .byte $59,$54,$45,$0D,$0D,$00
+.c405					Prompt1
+>c405	0d 53 50 41 5a 49 4f 3a		        .byte $0D,$53,$50,$41,$5A,$49,$4F,$3A,$20,$49,$4E,$54
+>c40d	20 49 4e 54
+>c411	45 52 49 20 41 20 36 34		        .byte $45,$52,$49,$20,$41,$20,$36,$34,$2C,$20,$31,$32
+>c419	2c 20 31 32
+>c41d	38 20 45 20 32 35 36 20		        .byte $38,$20,$45,$20,$32,$35,$36,$20,$42,$49,$54,$00
+>c425	42 49 54 00
+.c429					Prompt2
+>c429	0d 53 50 41 5a 49 4f 3a		        .byte $0D,$53,$50,$41,$5A,$49,$4F,$3A,$20,$52,$49,$54
+>c431	20 52 49 54
+>c435	4f 52 4e 4f 20 41 4c 20		        .byte $4F,$52,$4E,$4F,$20,$41,$4C,$20,$42,$41,$53,$49
+>c43d	42 41 53 49
+>c441	43 00				        .byte $43,$00
+.c443					ErrorText
+>c443	45 52 52 4f 52 45 3a 20		        .byte $45,$52,$52,$4F,$52,$45,$3A,$20,$4C,$55,$4E,$47
+>c44b	4c 55 4e 47
+>c44f	48 45 5a 5a 41 20 4e 4f		        .byte $48,$45,$5A,$5A,$41,$20,$4E,$4F,$4E,$20,$56,$41
+>c457	4e 20 56 41
+>c45b	4c 49 44 41 00			        .byte $4C,$49,$44,$41,$00
+.c460					Name0
+>c460	5a 45 52 4f 3a 20 00		        .byte $5A,$45,$52,$4F,$3A,$20,$00
+.c467					Value0
+>c467	00				        .byte $00
+.c468					Name1
+>c468	55 4e 4f 3a 20 00		        .byte $55,$4E,$4F,$3A,$20,$00
+.c46e					Value1
+>c46e	01				        .byte $01
+.c46f					Name2
+>c46f	4e 4f 56 45 3a 20 00		        .byte $4E,$4F,$56,$45,$3A,$20,$00
+.c476					Value2
+>c476	09				        .byte $09
+.c477					Name3
+>c477	44 49 45 43 49 3a 20 00		        .byte $44,$49,$45,$43,$49,$3A,$20,$00
+.c47f					Value3
+>c47f	0a				        .byte $0A
+.c480					Name4
+>c480	32 35 35 3a 20 00		        .byte $32,$35,$35,$3A,$20,$00
+.c486					Value4
+>c486	ff				        .byte $FF
+.c487					Name5
+>c487	32 35 36 3a 20 00		        .byte $32,$35,$36,$3A,$20,$00
+.c48d					Value5
+>c48d	00 01				        .byte $00,$01
+.c48f					Name6
+>c48f	4d 41 58 20 31 36 20 42		        .byte $4D,$41,$58,$20,$31,$36,$20,$42,$49,$54,$3A,$20
+>c497	49 54 3a 20
+>c49b	00				        .byte $00
+.c49c					Value6
+>c49c	ff ff				        .byte $FF,$FF
+.c49e					Name7
+>c49e	4d 41 58 20 33 32 20 42		        .byte $4D,$41,$58,$20,$33,$32,$20,$42,$49,$54,$3A,$20
+>c4a6	49 54 3a 20
+>c4aa	00				        .byte $00
+.c4ab					Value7
+>c4ab	ff ff ff ff			        .byte $FF,$FF,$FF,$FF
+.c4af					Name8
+>c4af	4d 41 58 20 36 34 20 42		        .byte $4D,$41,$58,$20,$36,$34,$20,$42,$49,$54,$3A,$0D
+>c4b7	49 54 3a 0d
+>c4bb	00				        .byte $00
+.c4bc					Value8
+>c4bc	ff ff ff ff ff ff ff ff		        .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+.c4c4					Name9
+>c4c4	0d 4d 41 58 20 31 32 38		        .byte $0D,$4D,$41,$58,$20,$31,$32,$38,$20,$42,$49,$54
+>c4cc	20 42 49 54
+>c4d0	3a 0d 00			        .byte $3A,$0D,$00
+.c4d3					Value9
+>c4d3	ff ff ff ff ff ff ff ff		        .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+>c4db	ff ff ff ff
+>c4df	ff ff ff ff			        .byte $FF,$FF,$FF,$FF
+.c4e3					Name10
+>c4e3	0d 4d 41 58 20 32 35 36		        .byte $0D,$4D,$41,$58,$20,$32,$35,$36,$20,$42,$49,$54
+>c4eb	20 42 49 54
+>c4ef	3a 0d 00			        .byte $3A,$0D,$00
+.c4f2					Value10
+>c4f2	ff ff ff ff ff ff ff ff		        .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+>c4fa	ff ff ff ff
+>c4fe	ff ff ff ff ff ff ff ff		        .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+>c506	ff ff ff ff
+>c50a	ff ff ff ff ff ff ff ff		        .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+.c512					NameLo
+>c512	60 68 6f 77 80 87		        .byte <Name0,<Name1,<Name2,<Name3,<Name4,<Name5
+>c518	8f 9e af c4 e3			        .byte <Name6,<Name7,<Name8,<Name9,<Name10
+.c51d					NameHi
+>c51d	c4 c4 c4 c4 c4 c4		        .byte >Name0,>Name1,>Name2,>Name3,>Name4,>Name5
+>c523	c4 c4 c4 c4 c4			        .byte >Name6,>Name7,>Name8,>Name9,>Name10
+.c528					ValueLo
+>c528	67 6e 76 7f 86 8d		        .byte <Value0,<Value1,<Value2,<Value3,<Value4,<Value5
+>c52e	9c ab bc d3 f2			        .byte <Value6,<Value7,<Value8,<Value9,<Value10
+.c533					ValueHi
+>c533	c4 c4 c4 c4 c4 c4		        .byte >Value0,>Value1,>Value2,>Value3,>Value4,>Value5
+>c539	c4 c4 c4 c4 c4			        .byte >Value6,>Value7,>Value8,>Value9,>Value10
+.c53e					ValueLen
+>c53e	01 01 01 01 01 02 02 04		        .byte 1,1,1,1,1,2,2,4,8,16,32
+>c546	08 10 20
+
+;******  Return to file: /workspace/scratch/8b4c4d959ee6/AraziNaccache_C64/AraziNaccache/build/64tass/AraziNaccache.asm
+
+
+;******  End of listing

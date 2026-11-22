@@ -1,0 +1,23 @@
+{
+  "esito": "PASS",
+  "emulatore": "VICE x64sc",
+  "modello": "C64 PAL",
+  "stampa": "KERNAL CHROUT $FFD2",
+  "acquisizione": "comando screenshot del monitor VICE",
+  "verifica": "dump RAM video $0400-$07E7 confrontato con Python",
+  "schermate": [
+    {
+      "file": "VICE_interi_256bit.png",
+      "sha256": "de83eab9e072f6af3d005c388c13feeafeacb062c60da0b9457cd64d601d34a8"
+    },
+    {
+      "file": "VICE_interi_32bit.png",
+      "sha256": "0a362069d32c1c9a217032fba279368649149d3164f5927678eb71c662d2bc9b"
+    }
+  ],
+  "rom_sha256": {
+    "basic-901226-01.bin": "89878cea0a268734696de11c4bae593eaaa506465d2029d619c0e0cbccdfa62d",
+    "chargen-901225-01.bin": "fd0d53b8480e86163ac98998976c72cc58d5dd8eb824ed7b829774e74213b420",
+    "kernal-901227-03.bin": "83c60d47047d7beab8e5b7bf6f67f80daa088b7a6a27de0d7e016f6484042721"
+  }
+}
